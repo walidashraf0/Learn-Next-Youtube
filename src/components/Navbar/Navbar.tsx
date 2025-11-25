@@ -7,6 +7,7 @@ const Navbar = () => {
                 <Link className="text-gray-700 hover:text-blue-600 transition-colors capitalize" href={"/about"}>About</Link>
                 <Link className="text-gray-700 hover:text-blue-600 transition-colors capitalize" href={"/posts"}>Posts</Link>
                 <Link className="text-gray-700 hover:text-blue-600 transition-colors capitalize" href={"/contact"}>Contact</Link>
+                <Link className="text-gray-700 hover:text-blue-600 transition-colors capitalize" href={"/admin"}>Admin</Link>
             </nav>
         </>
     )
