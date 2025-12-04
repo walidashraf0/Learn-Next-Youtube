@@ -1,30 +1,35 @@
+"use client";
 import PostItem from "@/components/PostItem/PostItem";
 import { TPost } from "@/utils/types";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-const PostsPage = async () => {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts",
-    { cache: "no-store" }
-  )
+const PostsPage = () => {
+  const [posts, setPosts] = useState<TPost[]>([]);
 
+  
+  const getPosts = async () => {
+    try {
+      const res = await axios.get("https://jsonplaceholder.typicode.com/posts");
+      setPosts(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  if(!res.ok) {
-throw new Error("Failed to get Data!")
-  }
-
-
-  const posts: TPost[] = await res.json();
-
-
+  useEffect(() => {
+    getPosts();
+  }, []);
 
   return (
     <>
       <div className="flex items-center justify-center flex-wrap gap-7">
-        {posts?.map((post) => (
+        {posts?.slice(0, 6).map((post) => (
           <PostItem key={post.id} post={post} />
         ))}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default PostsPage
+export default PostsPage;
