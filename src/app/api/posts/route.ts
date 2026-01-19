@@ -1,32 +1,45 @@
-import { posts } from "@/utils/data";
+import { Post } from "@/generated/prisma/client";
 import { ICreatePostDTO } from "@/utils/dto";
-import { TPost } from "@/utils/types";
+import { prisma } from "@/utils/lib/prisma";
 import { createPostSchema } from "@/utils/validation";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = (request: NextRequest) => {
-  console.log(request);
-  return NextResponse.json(posts, { status: 200 });
+export const GET = async (request: NextRequest) => {
+  try {
+    const posts = await prisma.post.findMany();
+    return NextResponse.json(posts, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" },
+      { status: 500 },
+    );
+  }
 };
 
 export const POST = async (request: NextRequest) => {
-  const body = (await request.json()) as ICreatePostDTO;
+  try {
+    const body = (await request.json()) as ICreatePostDTO;
 
-  const validation = createPostSchema.safeParse(body);
+    const validation = createPostSchema.safeParse(body);
 
-  if (!validation.success) {
+    if (!validation.success) {
+      return NextResponse.json(
+        { message: validation.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+
+    const newPost: Post = await prisma.post.create({
+      data: {
+        title: body.title,
+        content: body.content,
+      },
+    });
+    return NextResponse.json(newPost, { status: 201 });
+  } catch (error) {
     return NextResponse.json(
-      { message: validation.error.issues[0].message },
-      { status: 400 }
+      { message: "internal server error" },
+      { status: 500 },
     );
   }
-
-  const newPost: TPost = {
-    id: posts.length + 1,
-    userId: 5,
-    title: body.title,
-    body: body.body,
-  };
-  posts.push(newPost);
-  return NextResponse.json(newPost, { status: 201 });
 };
