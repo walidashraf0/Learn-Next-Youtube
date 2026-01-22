@@ -33,12 +33,28 @@ export const PUT = async (
   request: NextRequest,
   { params }: ISinglePostProps,
 ) => {
-  const post = posts.find((p) => p.id === parseInt(params.id));
-  const data = (await request.json()) as IUpdatePostDTO;
-  if (!post) {
-    return NextResponse.json({ message: "Post Not Found" }, { status: 404 });
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: parseInt(params.id) },
+    });
+    const data = (await request.json()) as IUpdatePostDTO;
+    if (!post) {
+      return NextResponse.json({ message: "Post Not Found" }, { status: 404 });
+    }
+    const updatedPost = await prisma.post.update({
+      where: { id: parseInt(params.id) },
+      data: {
+        title: data.title,
+        content: data.content,
+      },
+    });
+    return NextResponse.json(updatedPost, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" },
+      { status: 500 },
+    );
   }
-  return NextResponse.json({ message: "post updated" }, { status: 200 });
 };
 
 // DELETE Post
@@ -46,9 +62,21 @@ export const DELETE = async (
   request: NextRequest,
   { params }: ISinglePostProps,
 ) => {
-  const post = posts.find((p) => p.id === parseInt(params.id));
-  if (!post) {
-    return NextResponse.json({ message: "Post Not Found" }, { status: 404 });
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: parseInt(params.id) },
+    });
+    if (!post) {
+      return NextResponse.json({ message: "Post Not Found" }, { status: 404 });
+    }
+    await prisma.post.delete({
+      where: { id: parseInt(params.id) },
+    });
+    return NextResponse.json({ message: "Post Deleted" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" },
+      { status: 500 },
+    );
   }
-  return NextResponse.json({ message: "post deleted" }, { status: 200 });
 };
