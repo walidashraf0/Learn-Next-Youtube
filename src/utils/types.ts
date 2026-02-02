@@ -6,5 +6,4 @@ type TPost = {
 }
 
 
-
 export type { TPost }
