@@ -1,5 +1,7 @@
 import { IRegisterUserDto } from "@/utils/dto";
+import { generateToken } from "@/utils/generateToken";
 import { prisma } from "@/utils/lib/prisma";
+import { TUserPayload } from "@/utils/types";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
@@ -42,13 +44,21 @@ export const POST = async (request: NextRequest) => {
       },
       select: {
         id: true,
-        username:true,
+        username: true,
         email: true,
-        isAdmin: true
-      }
+        isAdmin: true,
+      },
     });
 
-    return NextResponse.json(newUserData, { status: 201 });
+    const userPayload: TUserPayload = {
+      id: newUserData.id,
+      username: newUserData.username,
+      isAdmin: newUserData.isAdmin,
+    };
+
+    const token = generateToken(userPayload);
+
+    return NextResponse.json({ ...newUserData, token }, { status: 201 });
   } catch (error) {
     console.log(error);
     return NextResponse.json(
