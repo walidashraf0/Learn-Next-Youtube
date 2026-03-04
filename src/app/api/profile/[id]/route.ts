@@ -15,12 +15,7 @@ export const DELETE = async (request: NextRequest, { params }: IProps) => {
     }
 
     const authToken = request.headers.get("authtoken") as string;
-    if (!authToken) {
-      return NextResponse.json(
-        { message: "No AuthToken Provided" },
-        { status: 401 },
-      );
-    }
+    
 
     const userToken = jwt.verify(
       authToken,
