@@ -1,5 +1,5 @@
 import { IRegisterUserDto } from "@/utils/dto";
-import { generateToken } from "@/utils/generateToken";
+import { generateToken, setCookie } from "@/utils/generateToken";
 import { prisma } from "@/utils/lib/prisma";
 import { TUserPayload } from "@/utils/types";
 import bcrypt from "bcryptjs";
@@ -56,9 +56,12 @@ export const POST = async (request: NextRequest) => {
       isAdmin: newUserData.isAdmin,
     };
 
-    const token = generateToken(userPayload);
+    const cookie = setCookie(userPayload);
 
-    return NextResponse.json({ ...newUserData, token }, { status: 201 });
+    return NextResponse.json(
+      { ...newUserData },
+      { status: 201, headers: { "Set-Cookie": cookie } },
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

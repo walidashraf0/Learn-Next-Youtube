@@ -1,10 +1,11 @@
 import { ILoginUserDto } from "@/utils/dto";
-import { generateToken } from "@/utils/generateToken";
+import { generateToken, setCookie } from "@/utils/generateToken";
 import { prisma } from "@/utils/lib/prisma";
 import { TUserPayload } from "@/utils/types";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod";
+import { serialize } from "cookie";
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -46,11 +47,11 @@ export const POST = async (request: NextRequest) => {
       isAdmin: user.isAdmin,
     };
 
-    const token = generateToken(userPayload);
+    const cookie = setCookie(userPayload);
 
     return NextResponse.json(
-      { message: "Authenticated", token },
-      { status: 200 },
+      { message: "Authenticated" },
+      { status: 200, headers: { "Set-Cookie": cookie } },
     );
   } catch (error) {
     return NextResponse.json(
