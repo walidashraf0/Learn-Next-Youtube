@@ -9,15 +9,26 @@ interface IUpdatePostDTO {
 }
 
 interface IRegisterUserDto {
-  username: string,
-  email: string,
-  password: string,
+  username: string;
+  email: string;
+  password: string;
 }
 
 interface ILoginUserDto {
-  email: string,
-  password: string,
+  email: string;
+  password: string;
 }
 
+interface IUpdateUserDto {
+  username?: string;
+  email?: string;
+  password: string;
+}
 
-export type { ICreatePostDTO, IUpdatePostDTO, IRegisterUserDto, ILoginUserDto };
+export type {
+  ICreatePostDTO,
+  IUpdatePostDTO,
+  IRegisterUserDto,
+  ILoginUserDto,
+  IUpdateUserDto,
+};
