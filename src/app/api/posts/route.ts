@@ -6,7 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (request: NextRequest) => {
   try {
-    const posts = await prisma.post.findMany();
+    const pageNumber = request.nextUrl.searchParams.get("page") || "1";
+    const POST_PER_PAGE = 6;
+    const posts = await prisma.post.findMany({
+      skip: (parseInt(pageNumber) - 1) * POST_PER_PAGE,
+      take: POST_PER_PAGE,
+    });
     return NextResponse.json(posts, { status: 200 });
   } catch (error) {
     return NextResponse.json(

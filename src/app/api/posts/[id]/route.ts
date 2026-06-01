@@ -15,6 +15,20 @@ export const GET = async (
   try {
     const post = await prisma.post.findUnique({
       where: { id: parseInt(params.id) },
+      include: {
+        comments: {
+          include: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
     });
     if (!post) {
       return NextResponse.json({ message: "Post Not Found" }, { status: 404 });
