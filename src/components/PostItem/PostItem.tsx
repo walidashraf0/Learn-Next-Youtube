@@ -1,8 +1,8 @@
-import { TPost } from "@/utils/types";
+import { Post } from "@/generated/prisma/client";
 import Link from "next/link";
 
 interface IPostProps {
-  post: TPost;
+  post: Post;
 }
 
 const PostItem = ({ post }: IPostProps) => {
@@ -14,7 +14,7 @@ const PostItem = ({ post }: IPostProps) => {
       <h2 className="text-2xl font-bold text-green-400 line-clamp-1">
         {post.title}
       </h2>
-      <p className="text-sm text-gray-600 line-clamp-1">{post.body}</p>
+      <p className="text-sm text-gray-600 line-clamp-1">{post.content}</p>
       <Link href={`/posts/${post.id}`}>Read More...</Link>
     </div>
   );
