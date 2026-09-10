@@ -8,7 +8,7 @@ const SearchPostInput = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push(`/posts/searchResult?query=${searchText}`);
+    router.push(`/posts/search?searchText=${searchText}`);
     // console.log({ searchText });
   };
 
