@@ -16,3 +16,16 @@ export const verifyToken = (request: NextRequest): TUserPayload | null => {
     return null;
   }
 };
+
+export const verifyTokenPage = (token: string): TUserPayload | null => {
+  try {
+    const privateKey = process.env.JWT_SECRET as string;
+    const userPayload = jwt.verify(token, privateKey) as TUserPayload;
+    if (!userPayload) {
+      return null;
+    }
+    return userPayload;
+  } catch (error) {
+    return null;
+  }
+};

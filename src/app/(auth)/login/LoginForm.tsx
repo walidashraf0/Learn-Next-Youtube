@@ -1,4 +1,5 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,13 +9,27 @@ const LoginForm = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (email === "") return toast.error("Email is required");
     if (password === "") return toast.error("Password is required");
-    console.log({ email, password });
-    router.replace("/");
+
+    try {
+      setLoading(true);
+      await axios.post(`http://localhost:3000/api/users/login`, {
+        email,
+        password,
+      });
+      toast.success("Login Successfully");
+      router.replace("/");
+      router.refresh();
+      setLoading(false);
+    } catch (error) {
+      toast.error("An Error Occured" + error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,10 +75,12 @@ const LoginForm = () => {
         </Link>
       </div>
       <button
+        onClick={handleSubmit}
+        disabled={loading}
         type="submit"
         className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 hover:cursor-pointer"
       >
-        Sign In
+        {loading ? "Loading..." : "Sign In"}
       </button>
 
       <div className="flex items-center gap-2 text-sm text-gray-500 pt-3">
