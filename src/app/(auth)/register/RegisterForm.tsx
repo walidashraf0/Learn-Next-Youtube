@@ -1,19 +1,36 @@
 "use client";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 const RegisterForm = () => {
+  const router = useRouter();
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (userName === "") return toast.error("User Name is required");
     if (email === "") return toast.error("Email is required");
     if (password === "") return toast.error("Password is required");
-    console.log({ email, password });
+    try {
+      setLoading(true);
+      await axios.post("http://localhost:3000/api/users/register", {
+        username: userName,
+        email,
+        password,
+      });
+      router.replace("/");
+      setLoading(false);
+      router.refresh();
+    } catch (error: any) {
+      toast.error(error?.response?.data.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,9 +93,10 @@ const RegisterForm = () => {
       </div>
       <button
         type="submit"
+        disabled={loading}
         className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 hover:cursor-pointer"
       >
-        Sign In
+        {loading ? "Loading..." : "Sign Up"}
       </button>
 
       <div className="flex items-center gap-2 text-sm text-gray-500 pt-3">

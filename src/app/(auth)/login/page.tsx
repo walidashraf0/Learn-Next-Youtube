@@ -1,7 +1,12 @@
+import { cookies } from "next/headers";
 import LoginForm from "./LoginForm";
+import { redirect } from "next/navigation";
 
-const LoginPage = () => {
-
+const LoginPage = async () => {
+  const token = (await cookies()).get("jwtToken")?.value;
+  if (token) {
+    redirect("/");
+  }
   return (
     <section className="mt-8 flex items-center justify-center">
       <div className="m-auto bg-white rounded-lg p-5 w-full md:w-2/3">

@@ -1,6 +1,12 @@
-import RegisterForm from "./RegisterForm"
+import { cookies } from "next/headers";
+import RegisterForm from "./RegisterForm";
+import { redirect } from "next/navigation";
 
-const RegisterPage = () => {
+const RegisterPage = async () => {
+  const token = (await cookies()).get("jwtToken")?.value;
+  if (token) {
+    redirect("/");
+  }
   return (
     <section className="mt-8 flex items-center justify-center">
       <div className="m-auto bg-white rounded-lg p-5 w-full md:w-2/3">
@@ -8,7 +14,7 @@ const RegisterPage = () => {
         <RegisterForm />
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;
