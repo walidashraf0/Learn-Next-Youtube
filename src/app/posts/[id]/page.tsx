@@ -1,20 +1,19 @@
 "use client";
+import { getSinglePost } from "@/app/apiCalls/getPosts";
 import AddCommentForm from "@/components/comments/AddCommentForm";
 import CommentItem from "@/components/comments/CommentItem";
-import { TPost } from "@/utils/types";
-import axios from "axios";
+import { SinglePostWithComments } from "@/utils/types";
 import { use, useEffect, useState } from "react";
 
 const PostPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
 
-  const [post, setPost] = useState<TPost | null>(null);
+  const [post, setPost] = useState<SinglePostWithComments | null>(null);
   const getPost = async () => {
     try {
-      const res = await axios.get(
-        `https://jsonplaceholder.typicode.com/posts/${id}`
-      );
-      setPost(res.data);
+      const data: SinglePostWithComments = await getSinglePost(id);
+      console.log(data);
+      setPost(data);
     } catch (error) {
       console.log(error);
     }
@@ -22,24 +21,55 @@ const PostPage = ({ params }: { params: Promise<{ id: string }> }) => {
 
   useEffect(() => {
     getPost();
-  }, []);
+  }, [id]);
 
   return (
     <>
-      <div className="container mx-auto">
-        <div className="my-4 mx-auto p-2 w-full md:w-2/3 bg-gray-400 border-2 border-blue-400 rounded-md">
-          <h2 className="text-2xl font-bold text-green-400">
-            {post?.title} <span className="text-2xl">{post?.id}</span>
-          </h2>
-          <p className="text-sm text-gray-600">{post?.body}</p>
-        </div>
-        <AddCommentForm />
-        <CommentItem comment={"HIIIII"} />
-        <CommentItem comment={"HIIIII"} />
-        <CommentItem comment={"HIIIII"} />
-        <CommentItem comment={"HIIIII"} />
-        <CommentItem comment={"HIIIII"} />
-        <CommentItem comment={"HIIIII"} />
+      <div className="mx-auto mx-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+        <article className="mx-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_45px_rgba(15,23,42,0.08)]">
+          <div className="bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-6 py-8 sm:px-8">
+            <div className="mb-4 inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-white/80">
+              Post
+            </div>
+            <h1 className="text-3xl font-bold tracking-light text-white sm:text-4xl">
+              {post?.title ?? "Loading Article"}
+            </h1>
+          </div>
+
+          <div className="space-y-6 px-6 py-8 sm:px-8">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+              <span className="text-sm font-medium text-slate-500">
+                Post #{post?.id ?? "-"}
+              </span>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                Community
+              </span>
+            </div>
+
+            <p className="whitespace-pre-line text-base leading-8 text-slate-700">
+              {post?.content ?? "Loading conetent"}
+            </p>
+          </div>
+        </article>
+
+        <section className="mx-auto mt-10 w-full max-w-3xl">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-800">Comments</h2>
+            <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
+              {post?.comments?.length ?? 0} total
+            </span>
+          </div>
+
+          <div className="mt-7">
+            <AddCommentForm />
+          </div>
+
+          <div className="space-y-4">
+            {post?.comments?.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} />
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

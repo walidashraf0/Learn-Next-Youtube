@@ -20,7 +20,7 @@ export const GET = async (request: NextRequest, { params }: IGetPostProps) => {
   if (!post) {
     return NextResponse.json({ message: "Post not found" }, { status: 404 });
   }
-  return NextResponse.json({ message: post }, { status: 200 });
+  return NextResponse.json({ post }, { status: 200 });
 };
 
 export const PUT = async (request: NextRequest, { params }: IGetPostProps) => {
