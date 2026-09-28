@@ -1,14 +1,34 @@
 "use client";
+import { CommentWithUser } from "@/utils/types";
+import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-const AddCommentForm = () => {
+interface IAddCommentFromProps {
+  postId?: number;
+  onCommentAdded: (comment: CommentWithUser) => void;
+}
+
+const AddCommentForm = ({ postId, onCommentAdded }: IAddCommentFromProps) => {
   const [commentText, setCommentText] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (commentText === "") return toast.error("Comment is required");
-    console.log({ commentText });
+    try {
+      const res = await axios.post<CommentWithUser>(
+        `http://localhost:3000/api/comments`,
+        {
+          text: commentText.trim(),
+          postId,
+        },
+      );
+      onCommentAdded(res.data)
+      setCommentText("");
+      toast.success("Comment Added successfully!");
+    } catch (error: any) {
+      toast.error(error);
+    }
   };
 
   return (
